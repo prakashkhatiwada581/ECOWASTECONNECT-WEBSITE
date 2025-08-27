@@ -1,0 +1,58 @@
+{
+  "name": "ecowasteconnect-testing",
+  "version": "1.0.0",
+  "description": "System testing suite for EcoWasteConnect application using Selenium WebDriver",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js --timeout 30000",
+    "test:admin": "mocha tests/admin/*.test.js --timeout 30000",
+    "test:user": "mocha tests/user/*.test.js --timeout 30000",
+    "test:auth": "mocha tests/auth/*.test.js --timeout 30000",
+    "test:api": "mocha tests/api/*.test.js --timeout 30000",
+    "test:e2e": "mocha tests/e2e/*.test.js --timeout 60000",
+    "test:smoke": "mocha tests/smoke/*.test.js --timeout 15000",
+    "test:regression": "npm run test",
+    "setup": "node setup/setupTests.js",
+    "teardown": "node setup/teardownTests.js",
+    "webdriver:install": "node setup/installWebDrivers.js",
+    "report": "mochawesome-merge reports/*.json > reports/merged-report.json && marge reports/merged-report.json -o reports/html",
+    "lint": "eslint tests/ --ext .js",
+    "clean": "rimraf reports screenshots logs"
+  },
+  "keywords": [
+    "selenium",
+    "webdriver",
+    "testing",
+    "e2e",
+    "automation",
+    "waste-management"
+  ],
+  "author": "EcoWasteConnect Testing Team",
+  "license": "MIT",
+  "dependencies": {
+    "selenium-webdriver": "^4.16.0",
+    "mocha": "^10.2.0",
+    "chai": "^4.3.10",
+    "chai-as-promised": "^7.1.1",
+    "axios": "^1.6.2",
+    "faker": "^6.6.6",
+    "@faker-js/faker": "^8.3.1",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "marge": "^1.0.1",
+    "eslint": "^8.55.0",
+    "rimraf": "^5.0.5",
+    "chromedriver": "^119.0.1",
+    "geckodriver": "^4.3.0",
+    "edgedriver": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
