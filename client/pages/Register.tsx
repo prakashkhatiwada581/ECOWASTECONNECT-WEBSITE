@@ -8,7 +8,6 @@ import { Recycle, UserPlus } from "lucide-react";
 export default function Register() {
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center py-12">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-blue-50">
         {/* Floating Background Elements */}
         <div className="absolute inset-0">
