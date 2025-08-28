@@ -1,9 +1,16 @@
+/**
+ * @file server.js
+ * @description EcoWasteConnect backend API using Express with in-memory storage (demo mode)
+ * @note Replace in-memory arrays with MongoDB or another database in production.
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 
-// Simple in-memory storage for demo (replace with MongoDB in production)
+// ------------------- In-Memory Data (Demo Mode) ------------------- //
+// Replace with database (e.g., MongoDB) for production use.
 let users = [
   {
     id: '1',
@@ -67,17 +74,19 @@ let issues = [
   }
 ];
 
+// ------------------- App Initialization ------------------- //
 const app = express();
 
-// Middleware
+// ------------------- Middleware ------------------- //
 app.use(cors({
-  origin: true,
+  origin: true, // Allow any origin for demo purposes
   credentials: true
 }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../dist/spa')));
+app.use(express.json()); // Parse JSON body
+app.use(express.static(path.join(__dirname, '../dist/spa'))); // Serve static frontend files
 
-// Simple auth middleware
+// ------------------- Authentication Middleware ------------------- //
+// Simple demo auth middleware using base64 token
 const auth = (req, res, next) => {
   const authHeader = req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -86,7 +95,7 @@ const auth = (req, res, next) => {
   
   const token = authHeader.substring(7);
   
-  // Simple token validation (in production, use JWT)
+  // Decode token (replace with JWT for production)
   try {
     const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
     const user = users.find(u => u.id === decoded.userId && u.isActive);
@@ -100,15 +109,16 @@ const auth = (req, res, next) => {
   }
 };
 
-// Generate simple token
+// Generate a basic token (for demo only)
 const generateToken = (userId) => {
   return Buffer.from(JSON.stringify({ userId, exp: Date.now() + 7 * 24 * 60 * 60 * 1000 })).toString('base64');
 };
 
-// Auth Routes
+// ------------------- Auth Routes ------------------- //
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   
+  // Find user and validate password
   const user = users.find(u => u.email === email && u.isActive);
   if (!user || user.password !== password) {
     return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -116,7 +126,7 @@ app.post('/api/auth/login', (req, res) => {
   
   const token = generateToken(user.id);
   const userResponse = { ...user };
-  delete userResponse.password;
+  delete userResponse.password; // Remove sensitive info
   
   res.json({
     success: true,
@@ -128,6 +138,7 @@ app.post('/api/auth/login', (req, res) => {
 app.post('/api/auth/register', (req, res) => {
   const { name, email, password, phone, communityName, address } = req.body;
   
+  // Check for duplicate email
   if (users.find(u => u.email === email)) {
     return res.status(400).json({ success: false, message: 'User already exists' });
   }
@@ -170,10 +181,10 @@ app.get('/api/auth/me', auth, (req, res) => {
   res.json({ success: true, data: { user: userResponse } });
 });
 
-// Pickup Routes
+// ------------------- Pickup Routes ------------------- //
 app.get('/api/pickups', auth, (req, res) => {
+  // Admin sees all pickups, user sees only their pickups
   let userPickups = pickups;
-  
   if (req.user.role === 'user') {
     userPickups = pickups.filter(p => p.user === req.user.id);
   }
@@ -212,13 +223,11 @@ app.post('/api/pickups', auth, (req, res) => {
 
 app.put('/api/pickups/:id', auth, (req, res) => {
   const pickupIndex = pickups.findIndex(p => p.id === req.params.id);
-  
   if (pickupIndex === -1) {
     return res.status(404).json({ success: false, message: 'Pickup not found' });
   }
   
   const pickup = pickups[pickupIndex];
-  
   if (req.user.role === 'user' && pickup.user !== req.user.id) {
     return res.status(403).json({ success: false, message: 'Access denied' });
   }
@@ -234,26 +243,22 @@ app.put('/api/pickups/:id', auth, (req, res) => {
 
 app.delete('/api/pickups/:id', auth, (req, res) => {
   const pickupIndex = pickups.findIndex(p => p.id === req.params.id);
-  
   if (pickupIndex === -1) {
     return res.status(404).json({ success: false, message: 'Pickup not found' });
   }
   
   const pickup = pickups[pickupIndex];
-  
   if (req.user.role === 'user' && pickup.user !== req.user.id) {
     return res.status(403).json({ success: false, message: 'Access denied' });
   }
   
   pickups.splice(pickupIndex, 1);
-  
   res.json({ success: true, message: 'Pickup deleted successfully' });
 });
 
-// Issue Routes
+// ------------------- Issue Routes ------------------- //
 app.get('/api/issues', auth, (req, res) => {
   let userIssues = issues;
-  
   if (req.user.role === 'user') {
     userIssues = issues.filter(i => i.reporter === req.user.id);
   }
@@ -292,7 +297,7 @@ app.post('/api/issues', auth, (req, res) => {
   });
 });
 
-// User Routes (Admin only)
+// ------------------- User Routes (Admin only) ------------------- //
 app.get('/api/users', auth, (req, res) => {
   if (req.user.role !== 'admin') {
     return res.status(403).json({ success: false, message: 'Access denied' });
@@ -318,7 +323,7 @@ app.get('/api/users', auth, (req, res) => {
   });
 });
 
-// Statistics Routes
+// ------------------- Analytics Routes ------------------- //
 app.get('/api/analytics/overview', auth, (req, res) => {
   const stats = {
     totalUsers: users.filter(u => u.isActive).length,
@@ -336,7 +341,7 @@ app.get('/api/analytics/overview', auth, (req, res) => {
   res.json({ success: true, data: stats });
 });
 
-// Health check
+// ------------------- Health Check ------------------- //
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
@@ -345,12 +350,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve React app for all other routes
+// ------------------- SPA Fallback ------------------- //
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/spa/index.html'));
 });
 
-// Error handling
+// ------------------- Global Error Handler ------------------- //
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);
   res.status(err.status || 500).json({
@@ -359,8 +364,8 @@ app.use((err, req, res, next) => {
   });
 });
 
+// ------------------- Server Initialization ------------------- //
 const PORT = process.env.PORT || 3001;
-
 app.listen(PORT, () => {
   console.log(`🚀 EcoWasteConnect Backend running on port ${PORT}`);
   console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
