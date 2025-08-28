@@ -45,7 +45,7 @@ const connectDB = async () => {
       console.log('2. For MongoDB Compass: mongodb://localhost:27017/ecowasteconnect');
       console.log('3. Or use MongoDB Atlas: Update MONGODB_URI in your .env file');
       console.log('4. Download MongoDB Community Server: https://www.mongodb.com/try/download/community');
-      console.log('\n💡 To start MongoDB locally:');
+      console.log('\n💡Start the MongoDB locally:');
       console.log('   - Windows: Run "mongod" in command prompt');
       console.log('   - Mac: Run "brew services start mongodb/brew/mongodb-community"');
       console.log('   - Linux: Run "sudo systemctl start mongod"');
