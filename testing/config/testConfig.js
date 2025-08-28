@@ -1,11 +1,17 @@
+/**
+ * @file testConfig.js
+ * @description Centralized test configuration for UI and API testing.
+ *              Includes URLs, browsers, timeouts, test data, selectors, and environment settings.
+ */
+
 const path = require('path');
 
 const testConfig = {
-  // Application URLs
-  baseUrl: process.env.BASE_URL || 'http://localhost:8080',
-  apiUrl: process.env.API_URL || 'http://localhost:5000/api',
-  
-  // Browser configurations
+  // ------------------- Application URLs ------------------- //
+  baseUrl: process.env.BASE_URL || 'http://localhost:8080', // Frontend URL
+  apiUrl: process.env.API_URL || 'http://localhost:5000/api', // Backend API URL
+
+  // ------------------- Browser Configurations ------------------- //
   browsers: {
     chrome: {
       name: 'chrome',
@@ -18,7 +24,7 @@ const testConfig = {
         '--disable-web-security',
         '--allow-running-insecure-content'
       ],
-      headless: process.env.HEADLESS === 'true'
+      headless: process.env.HEADLESS === 'true' // Run Chrome in headless mode if env variable set
     },
     firefox: {
       name: 'firefox',
@@ -38,19 +44,19 @@ const testConfig = {
       headless: process.env.HEADLESS === 'true'
     }
   },
-  
+
   // Default browser for tests
   defaultBrowser: process.env.BROWSER || 'chrome',
-  
-  // Timeouts (in milliseconds)
+
+  // ------------------- Timeouts (milliseconds) ------------------- //
   timeouts: {
-    implicit: 10000,
-    explicit: 15000,
-    page: 30000,
-    script: 20000
+    implicit: 10000,  // Implicit wait for elements
+    explicit: 15000,  // Explicit wait for conditions
+    page: 30000,      // Page load timeout
+    script: 20000     // Script execution timeout
   },
-  
-  // Test data
+
+  // ------------------- Test Users ------------------- //
   testUsers: {
     admin: {
       email: 'admin@admin.com',
@@ -69,8 +75,8 @@ const testConfig = {
       password: 'wrongpassword'
     }
   },
-  
-  // File paths
+
+  // ------------------- File Paths ------------------- //
   paths: {
     screenshots: path.join(__dirname, '../screenshots'),
     reports: path.join(__dirname, '../reports'),
@@ -78,20 +84,20 @@ const testConfig = {
     fixtures: path.join(__dirname, '../fixtures'),
     downloads: path.join(__dirname, '../downloads')
   },
-  
-  // Test environment settings
+
+  // ------------------- Test Environment Settings ------------------- //
   environment: {
-    retryAttempts: 2,
-    screenshotOnFailure: true,
-    videoRecording: false,
+    retryAttempts: 2,               // Number of retry attempts for failed tests
+    screenshotOnFailure: true,      // Capture screenshot on failure
+    videoRecording: false,          // Record test videos
     logLevel: process.env.LOG_LEVEL || 'info',
-    parallel: process.env.PARALLEL === 'true',
+    parallel: process.env.PARALLEL === 'true', // Run tests in parallel
     maxParallel: parseInt(process.env.MAX_PARALLEL) || 3
   },
-  
-  // Page selectors
+
+  // ------------------- Page Selectors ------------------- //
   selectors: {
-    // Authentication
+    // Authentication selectors
     auth: {
       emailInput: 'input[type="email"]',
       passwordInput: 'input[type="password"]',
@@ -100,8 +106,8 @@ const testConfig = {
       signUpLink: 'a[href="/register"]',
       loginLink: 'a[href="/login"]'
     },
-    
-    // Navigation
+
+    // Navigation selectors
     navigation: {
       logo: '[data-testid="logo"]',
       profileDropdown: '[data-testid="profile-dropdown"]',
@@ -109,7 +115,7 @@ const testConfig = {
       userDashboardLink: 'a[href="/dashboard"]',
       sidebarMenu: '[data-testid="sidebar-menu"]'
     },
-    
+
     // Common UI elements
     common: {
       loadingSpinner: '[data-testid="loading"]',
@@ -120,8 +126,8 @@ const testConfig = {
       submitButton: 'button[type="submit"]',
       cancelButton: 'button[type="button"]'
     },
-    
-    // Forms
+
+    // Form elements
     forms: {
       input: 'input',
       textarea: 'textarea',
@@ -131,8 +137,8 @@ const testConfig = {
       fileInput: 'input[type="file"]'
     }
   },
-  
-  // API endpoints for testing
+
+  // ------------------- API Endpoints for Testing ------------------- //
   apiEndpoints: {
     auth: {
       login: '/auth/login',
